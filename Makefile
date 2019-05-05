@@ -7,14 +7,18 @@
 # This code is distributed under the GNU Public License
 # which can be found at http://www.gnu.org/licenses/gpl.txt
 #
+# Modified     : Johan Edman 2019-05-05
+#                For flashing via Raspberry SPI Interface
 ##############################################################################
 
 # Fixes clash between windows and coreutils mkdir. Comment out the below line to compile on Linux
-COREUTILS  = C:/Projects/coreutils/bin/
+# COREUTILS  = C:/Projects/coreutils/bin/
 
+AVRDEVICE  = t85
 DEVICE     = attiny85
 CLOCK      = 4000000
-PROGRAMMER = -c stk500 -P COM10 
+PROGRAMMER = -c linuxspi -P /dev/spidev0.0
+BAUDRATE   = -b 9600
 SRCS       = main.c dtmf.c
 OBJS       = $(SRCS:.c=.o)
 FUSES      = -U lfuse:w:0xFD:m -U hfuse:w:0xDF:m -U efuse:w:0xFF:m
@@ -26,7 +30,7 @@ MKDIR      = $(COREUTILS)mkdir
 
 POSTCOMPILE = $(MV) $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
-AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE)
+AVRDUDE = avrdude $(PROGRAMMER) -p $(AVRDEVICE) $(BAUDRATE)
 COMPILE = avr-gcc -Wall -Os $(DEPFLAGS) -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
 
 all: rotarydial.hex
